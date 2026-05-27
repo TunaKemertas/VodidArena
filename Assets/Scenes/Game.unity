@@ -236,24 +236,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameDurationSeconds: 180
   playerMoveSpeed: 6
-  playerHP: 100
+  playerHP: 55
   weaponDamage: 10
-  weaponFireRate: 2
+  weaponFireRate: 0.75
   playerProjectileSpeed: 12
-  meleeSpeed: 2.8
+  meleeSpeed: 3.1
   meleeHP: 20
-  meleeContactDamage: 10
-  rangedSpeed: 2.2
+  meleeContactDamage: 14
+  meleeContactCooldown: 0.38
+  rangedSpeed: 2.35
   rangedHP: 16
   rangedDesiredDistance: 6
   rangedStopDistance: 5
-  rangedShootInterval: 1.6
-  rangedProjectileDamage: 8
+  rangedShootInterval: 1.25
+  rangedProjectileDamage: 11
   rangedProjectileSpeed: 7
   spawnRadius: 14
   minSpawnDistanceFromPlayer: 5
-  startSpawnsPerSecond: 0.6
-  endSpawnsPerSecond: 2
+  startSpawnsPerSecond: 0.45
+  endSpawnsPerSecond: 1.45
 --- !u!4 &200002
 Transform:
   m_ObjectHideFlags: 0

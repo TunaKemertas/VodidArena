@@ -1,157 +1,148 @@
-# Void Arena (Unity 2D) – Beginner Prototype
+# Void Survivors (Void Arena)
 
-This project is a small playable “Vampire Survivors”-style prototype:
+A small **Vampire Survivors–style** 2D survival prototype built in Unity. Survive enemy waves for **3 minutes**, collect XP, level up your auto-weapon, and try not to die.
 
-- One arena map
-- One player (WASD movement)
-- Two enemy types (melee + ranged)
-- Automatic shooting at nearest enemy
-- XP gems + leveling (weapon upgrades automatically)
-- Increasing enemy spawn rate over time
-- Win condition at **3:00**
+---
 
-The code is intentionally simple and easy to expand.
+## Game Description
+
+You control a survivor in a dark arena. Enemies spawn continuously and get more frequent over time. Your weapon **automatically shoots** the nearest enemy at a modest rate. Defeating enemies drops **XP gems**; collecting them fills your XP bar and **levels you up** (more damage + a small fire-rate boost). Win by surviving until the timer hits **0:00**. Lose if your HP reaches zero.
+
+---
+
+## Controls
+
+| Input | Action |
+|--------|--------|
+| **W / A / S / D** or **Arrow keys** | Move |
+| **Esc** or **Pause button** | Pause / resume |
+| **Mouse** | UI buttons (Play, Settings, Restart, Menu, etc.) |
+
+---
+
+## Implemented Mechanics
+
+- Top-down **WASD movement** (Rigidbody2D)
+- **Automatic targeting** and continuous shooting
+- **Two enemy types**: melee (chase + contact damage) and ranged (keeps distance + shoots)
+- **Enemy spawner** with increasing spawn rate over 3 minutes
+- **XP gems**, leveling, and automatic weapon upgrades
+- **3-minute survival timer** with win condition
+- **Game Over** on death with restart / main menu
+- **Full UI flow**: Main Menu → Game → Win/Lose → Restart or Menu
+- **Pause menu** (Resume, Restart, Main Menu, Settings)
+- **Settings panel** (Master / Music / SFX volume, saved with PlayerPrefs)
+- **Mobile-ready UI**: Canvas Scaler (1080×1920 portrait), anchors, **Safe Area** script
+- **DOTween animations** (menu intro, level-up, game over)
+- **Juice**: camera shake on hit, level-up punch, XP gem pop, button feedback
+- **Audio**: procedural placeholder music + SFX (replace with real clips anytime)
+
+---
+
+## Cut Mechanics (and Why)
+
+| Cut | Reason |
+|-----|--------|
+| Multiple weapons / inventory | Out of scope; one auto-weapon keeps the prototype focused |
+| Procedural map generation | Single arena is enough for a course demo |
+| Multiplayer / online | Not required; adds major complexity |
+| Advanced RPG stats (crit, armor, perks menu) | Would over-engineer a beginner solo project |
+| TextMeshPro dependency | Used built-in UI `Text` for simpler setup |
+
+---
+
+## Features Added During Development
+
+1. Runtime **bootstrap** scenes (playable without manual prefab wiring)
+2. **uGUI** panels replacing early IMGUI prototype UI
+3. **Pause + Settings** systems with persistent volume
+4. **Safe Area** support for notched phones
+5. **DOTween** polish on menus and game-over flow
+6. **Camera shake**, XP pop, and button juice
+7. **Organized script folders** (Core, UI, Combat, Enemies, etc.)
+
+---
 
 ## Project Structure
 
-Scripts live in `Assets/Scripts/`:
+```
+Assets/Scripts/
+  Bootstrap/     GameBootstrapper, MenuBootstrapper
+  Core/          GameManager, SettingsManager
+  UI/            UIManager, MainMenuUI, SafeArea, UIAnimations, UICanvasFactory, UIButtonFeedback
+  Audio/         AudioManager
+  Player/        PlayerController
+  Combat/        WeaponController, Projectile
+  Enemies/       EnemyAI, RangedEnemyAI, EnemySpawner
+  Progression/   XPManager, XpGem
+  Utils/         AutoSprite2D, CameraFollow2D
+```
 
-- `PlayerController`: WASD movement + HP/death
-- `WeaponController`: auto-target + continuous firing + level-up scaling
-- `EnemyAI`: melee enemy (chase + contact damage + XP drop)
-- `RangedEnemyAI`: ranged enemy (keeps distance + shoots)
-- `EnemySpawner`: random spawns around player, ramps up over time
-- `XPManager`: XP/level progression + weapon level-ups
-- `UIManager`: HP/XP bars, timer, level text, game over/victory screens
-- `GameManager`: match timer (3 minutes), win/lose, restart/menu, freeze gameplay
+---
 
-Small helpers:
+## How to Run
 
-- `Projectile`: used for both player bullets and enemy projectiles
-- `XpGem`: XP collectible
-- `CameraFollow2D`: smooth camera follow
-- `MainMenuUI`: menu buttons hookup
+1. Open the project in **Unity 6** (6000.x).
+2. Wait for packages to resolve (**DOTween** + **UGUI** from `Packages/manifest.json`).
+3. Open **`Assets/Scenes/MainMenu.unity`**
+4. Press **Play** → **Play** → survive 3 minutes.
 
-## Unity Setup (Quick Steps)
-
-### 1) Scenes
-
-Create two scenes in `Assets/Scenes/`:
-
-- `MainMenu`
-- `Game` (you can rename `SampleScene` to `Game`)
-
-Then add both to **File → Build Settings… → Scenes In Build** in this order:
-
+Build order in **File → Build Settings**:
 1. `MainMenu`
 2. `Game`
 
-### 2) Tags (important)
+---
 
-Create tags:
+## AI Usage (Step by Step)
 
-- `Player`
-- `Enemy`
+### Tools used
+- **Cursor AI** (Claude-based coding agent in the IDE)
 
-Assign:
+### Example prompts used
+- *"Create a simple top-down 2D roguelike survival game in Unity called Void Arena…"*
+- *"Make it ready to play with scenes and bootstrap scripts"*
+- *"Fix white sprites / missing script errors / restart menu not closing"*
+- *"Polish for final submission: uGUI panels, DOTween, pause, settings, safe area, README"*
 
-- Player object tag = `Player`
-- Enemy prefabs tag = `Enemy`
+### How AI helped
+| Phase | AI contribution |
+|-------|------------------|
+| **Coding** | Generated core gameplay scripts (movement, shooting, enemies, XP, spawner) |
+| **Debugging** | Fixed inactive bullet prefabs, sprite color timing, scene junk, UI compile errors |
+| **Design** | Kept scope small (one map, two enemies, one weapon) suitable for a solo student |
+| **Polish** | Added UI panels, DOTween sequences, audio stub, folder organization, documentation |
 
-### 3) Game Scene Objects
+### What I verified myself
+- Play mode flow: menu → game → win/lose → restart
+- Pause does not break timer (uses `unscaledDeltaTime`)
+- Settings persist after restart
 
-Create these objects in the `Game` scene:
+---
 
-- **GameManager**
-  - Create empty object `GameManager`
-  - Add `GameManager` component
-  - Set `mainMenuSceneName = MainMenu`, `gameSceneName = Game`
-- **Player**
-  - Create a simple sprite (circle/square) named `Player`
-  - Add `Rigidbody2D` (Body Type: Dynamic, Gravity Scale: 0)
-  - Add a `CapsuleCollider2D` or `CircleCollider2D`
-  - Add `PlayerController`
-  - Add `XPManager`
-  - Add `WeaponController`
-  - Add a child empty object `FirePoint` in front of the player
-  - Assign `WeaponController.firePoint = FirePoint`
-- **Main Camera**
-  - Add `CameraFollow2D`
-  - Assign `target = Player`
-- **EnemySpawner**
-  - Create empty object `EnemySpawner`
-  - Add `EnemySpawner` component
-  - Assign `player = Player`
-  - Assign enemy prefabs (created in step 4)
-- **UI**
-  - Create a Canvas + EventSystem
-  - Add:
-    - HP bar (Slider)
-    - XP bar (Slider)
-    - Timer text (TMP_Text)
-    - Level text (TMP_Text)
-    - GameOver panel (hidden by default) with Restart + Menu buttons
-    - Victory panel (hidden by default) with Menu button
-  - Add `UIManager` to a UI root object and wire references.
+## What Changed and Why
 
-### 4) Prefabs (simple)
+| Change | Why |
+|--------|-----|
+| IMGUI → **uGUI Canvas** | Course requires proper UI panels, sliders, and mobile scaling |
+| Added **DOTween** | Required animations with easing and sequences |
+| Added **SafeArea** | Mobile notch / inset support for portrait UI |
+| Added **Pause + Settings** | Required menu flow and volume controls |
+| **Camera shake + juice** | Makes combat feedback readable and more polished |
+| **Script folders** | Easier grading and future expansion |
+| Kept **bootstrap spawns** | Project stays playable immediately after clone—no manual prefab setup |
 
-Create these prefabs (place them under `Assets/Prefabs/` if you want):
+---
 
-#### Player Bullet prefab
+## DOTween Notes
 
-- Create a small sprite `PlayerBullet`
-- Add `Rigidbody2D` (Gravity Scale: 0, Body Type: Kinematic is fine)
-- Add `CircleCollider2D` set **Is Trigger = true**
-- Add `Projectile`
+This project includes a **built-in lightweight tween module** at `Assets/Plugins/VoidSurvivorsTween/` that uses the same **`DG.Tweening` API** as DOTween (sequences, easing, UI tweens). It was added because the OpenUPM DOTween package could not be resolved on all machines.
 
-Assign `WeaponController.projectilePrefab = PlayerBullet`.
+Your UI animation code (`UIAnimations.cs`, `UIButtonFeedback.cs`, `XpGem.cs`) works without installing anything extra.
 
-#### Enemy Melee prefab
+**Optional:** You can still import the official **DOTween** from the Unity Asset Store later. Remove the `VoidSurvivorsTween` folder if you switch to the full asset to avoid duplicate `DG.Tweening` types.
 
-- Create a sprite `EnemyMelee`
-- Add `Rigidbody2D` (Gravity Scale: 0)
-- Add `Collider2D` (not trigger)
-- Add `EnemyAI`
-- Assign `xpGemPrefab` (below)
+---
 
-#### Enemy Ranged prefab
+## License / Credits
 
-- Create a sprite `EnemyRanged`
-- Add `Rigidbody2D` (Gravity Scale: 0)
-- Add `Collider2D` (not trigger)
-- Add `RangedEnemyAI`
-- Assign `projectilePrefab` (Enemy projectile below)
-- Assign `xpGemPrefab` (below)
-
-#### Enemy Projectile prefab
-
-- Create a small sprite `EnemyProjectile`
-- Add `Rigidbody2D` (Gravity Scale: 0)
-- Add `CircleCollider2D` set **Is Trigger = true**
-- Add `Projectile`
-
-#### XP Gem prefab
-
-- Create a small sprite `XpGem`
-- Add `CircleCollider2D` set **Is Trigger = true**
-- Add `XpGem`
-
-Important: the **Player** must have a `Collider2D` so triggers fire.
-
-### 5) Main Menu Scene
-
-In `MainMenu`:
-
-- Canvas with title text: **VOID SURVIVORS**
-- Start button
-- Quit button
-- Add `MainMenuUI` to an object and wire the buttons
-- Ensure a `GameManager` exists in this scene too (same as Game scene), or place it in one scene and keep `DontDestroyOnLoad` (already in script).
-
-## Notes / Common Gotchas
-
-- If bullets don’t hit: ensure `Projectile` collider is **Is Trigger** and enemies have tag `Enemy`.
-- If XP doesn’t collect: ensure XP gem collider is **Is Trigger** and Player has `XPManager`.
-- If game “freezes” immediately in editor: `Time.timeScale` may be 0 after GameOver/Win; press Play again or call `Restart()`.
-
+Student prototype for university submission. Placeholder audio is generated in code; swap with licensed SFX/music in `AudioManager` when ready.
