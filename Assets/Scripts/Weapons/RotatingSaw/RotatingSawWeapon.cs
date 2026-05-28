@@ -18,11 +18,11 @@ namespace VoidSurvivors.Weapons.RotatingSaw
 
         [Header("Visual")]
         public float bladeScale = 7f;
+        [SerializeField] private GameObject sawBladeShurikenPrefab;
 
         [Header("Runtime")]
         [Range(1, 5)] public int level = 1;
 
-        private const string SawBladePrefabPath = "Weapons/SawBladeShuriken";
         private readonly List<Transform> _blades = new List<Transform>();
         private GameObject _bladePrefab;
         private float _angle;
@@ -31,7 +31,9 @@ namespace VoidSurvivors.Weapons.RotatingSaw
 
         private void Start()
         {
-            _bladePrefab = Resources.Load<GameObject>(SawBladePrefabPath);
+            _bladePrefab = sawBladeShurikenPrefab != null
+                ? sawBladeShurikenPrefab
+                : RuntimePrefabLoader.LoadPrefab("SawBladeShuriken");
             RebuildBlades();
             SetActiveState(true);
         }
@@ -61,6 +63,13 @@ namespace VoidSurvivors.Weapons.RotatingSaw
             if (level == clamped) return;
             level = clamped;
             RebuildBlades();
+        }
+
+        public void SetSawBladeShurikenPrefab(GameObject prefab)
+        {
+            sawBladeShurikenPrefab = prefab;
+            if (_bladePrefab == null && sawBladeShurikenPrefab != null)
+                _bladePrefab = sawBladeShurikenPrefab;
         }
 
         private void TickCycle()
@@ -130,8 +139,9 @@ namespace VoidSurvivors.Weapons.RotatingSaw
 
         private Transform CreateBlade(int index)
         {
-            GameObject go = _bladePrefab != null
-                ? Instantiate(_bladePrefab)
+            GameObject prefab = sawBladeShurikenPrefab != null ? sawBladeShurikenPrefab : _bladePrefab;
+            GameObject go = prefab != null
+                ? Instantiate(prefab)
                 : new GameObject($"SawBlade_{index + 1}");
 
             go.name = $"SawBlade_{index + 1}";

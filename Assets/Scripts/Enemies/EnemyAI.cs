@@ -12,6 +12,7 @@ public class EnemyAI : MonoBehaviour
     [Header("Drops")]
     public XpGem xpGemPrefab;
     public int xpValue = 5;
+    [SerializeField] private GameObject heartPrefab;
 
     protected int _hp;
     protected Rigidbody2D _rb;
@@ -70,6 +71,11 @@ public class EnemyAI : MonoBehaviour
         _speedMultiplier = 1f;
     }
 
+    public void SetHeartPrefab(GameObject prefab)
+    {
+        heartPrefab = prefab;
+    }
+
     protected virtual void Die()
     {
         if (xpGemPrefab != null)
@@ -101,7 +107,7 @@ public class EnemyAI : MonoBehaviour
 
     private void SpawnHeart(Vector3 pos)
     {
-        GameObject prefab = RuntimePrefabLoader.LoadPrefab("HeartPrefab");
+        GameObject prefab = heartPrefab != null ? heartPrefab : RuntimePrefabLoader.LoadPrefab("HeartPrefab");
         GameObject go = prefab != null ? Instantiate(prefab) : new GameObject("HeartPickup");
         go.name = "HeartPickup";
         go.transform.position = pos;

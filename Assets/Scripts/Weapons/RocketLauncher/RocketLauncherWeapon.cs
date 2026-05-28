@@ -11,6 +11,9 @@ namespace VoidSurvivors.Weapons.RocketLauncher
         public int damage = 18;
         public float explosionRadius = 1.2f;
 
+        [Header("Art Prefabs")]
+        [SerializeField] private GameObject bombPrefab;
+
         [Header("Runtime")]
         [Range(1, 5)] public int level = 1;
 
@@ -43,6 +46,11 @@ namespace VoidSurvivors.Weapons.RocketLauncher
         public void SetLevel(int newLevel)
         {
             level = Mathf.Clamp(newLevel, 1, 5);
+        }
+
+        public void SetBombPrefab(GameObject prefab)
+        {
+            bombPrefab = prefab;
         }
 
         private Transform FindNearestEnemy()
@@ -90,7 +98,7 @@ namespace VoidSurvivors.Weapons.RocketLauncher
 
         private void SpawnRocket(Vector3 pos, Vector2 dir, int dmg, float radius)
         {
-            GameObject prefab = RuntimePrefabLoader.LoadPrefab("BombPrefab");
+            GameObject prefab = bombPrefab != null ? bombPrefab : RuntimePrefabLoader.LoadPrefab("BombPrefab");
             GameObject go = prefab != null ? Instantiate(prefab) : new GameObject("Bomb");
             go.name = "Bomb";
             go.transform.position = pos;

@@ -143,6 +143,28 @@ Your UI animation code (`UIAnimations.cs`, `UIButtonFeedback.cs`, `XpGem.cs`) wo
 
 ---
 
+## Android APK (missing sprites fix)
+
+Unity only ships art into a build if it is:
+
+1. Assigned on a component in a **built scene** (recommended), or  
+2. Placed under an **`Assets/Resources/`** folder and loaded with `Resources.Load`.
+
+This project does both:
+
+- **Game scene:** `GameBootstrapper` has all art prefabs wired in `Assets/Scenes/Game.unity`.
+- **Fallback:** copies of prefabs also live in `Assets/Resources/Prefabs/` for `RuntimePrefabLoader`.
+
+**If you add a new prefab:**
+
+1. Put the `.prefab` in `Assets/Prefabs/`.
+2. Copy it to `Assets/Resources/Prefabs/` (or drag a copy there in Unity).
+3. Assign it on **GameBootstrapper → Art Prefabs** in the **Game** scene.
+
+Then rebuild the APK. In the Editor, missing assets can still appear because `RuntimePrefabLoader` can read `Assets/Prefabs/` directly—that path does **not** exist on Android.
+
+---
+
 ## License / Credits
 
 Student prototype for university submission. Placeholder audio is generated in code; swap with licensed SFX/music in `AudioManager` when ready.

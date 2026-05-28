@@ -19,6 +19,10 @@ namespace VoidSurvivors.Weapons
         [Header("Main Weapon Reference")]
         public WeaponController mainGun;
 
+        [Header("Special Weapon Art Prefabs")]
+        [SerializeField] private GameObject bombPrefab;
+        [SerializeField] private GameObject sawBladeShurikenPrefab;
+
         [Header("Runtime Levels")]
         [SerializeField] private int _mainGunLevel = 1;
         private readonly Dictionary<WeaponId, int> _levels = new Dictionary<WeaponId, int>();
@@ -36,6 +40,12 @@ namespace VoidSurvivors.Weapons
         public int OwnedSpecialCount => _levels.Count;
 
         public bool HasWeapon(WeaponId id) => GetLevel(id) > 0;
+
+        public void SetSpecialWeaponPrefabs(GameObject bomb, GameObject sawBladeShuriken)
+        {
+            bombPrefab = bomb;
+            sawBladeShurikenPrefab = sawBladeShuriken;
+        }
 
         private void Awake()
         {
@@ -203,6 +213,7 @@ namespace VoidSurvivors.Weapons
                 {
                     var w = GetComponent<VoidSurvivors.Weapons.RocketLauncher.RocketLauncherWeapon>();
                     if (w == null) w = gameObject.AddComponent<VoidSurvivors.Weapons.RocketLauncher.RocketLauncherWeapon>();
+                    w.SetBombPrefab(bombPrefab);
                     w.SetLevel(level);
                     break;
                 }
@@ -210,6 +221,7 @@ namespace VoidSurvivors.Weapons
                 {
                     var w = GetComponent<VoidSurvivors.Weapons.RotatingSaw.RotatingSawWeapon>();
                     if (w == null) w = gameObject.AddComponent<VoidSurvivors.Weapons.RotatingSaw.RotatingSawWeapon>();
+                    w.SetSawBladeShurikenPrefab(sawBladeShurikenPrefab);
                     w.SetLevel(level);
                     break;
                 }

@@ -41,6 +41,19 @@ public class GameBootstrapper : MonoBehaviour
     public float startSpawnsPerSecond = 0.45f;
     public float endSpawnsPerSecond = 1.45f;
 
+    [Header("Art Prefabs")]
+    [SerializeField] private GameObject floorPrefab0;
+    [SerializeField] private GameObject floorPrefab1;
+    [SerializeField] private GameObject characterPrefab;
+    [SerializeField] private GameObject mcProjectilePrefab;
+    [SerializeField] private GameObject enemyProjectilePrefab;
+    [SerializeField] private GameObject expPrefab;
+    [SerializeField] private GameObject meleeEnemyPrefab;
+    [SerializeField] private GameObject rangedEnemyPrefab;
+    [SerializeField] private GameObject heartPrefab;
+    [SerializeField] private GameObject bombPrefab;
+    [SerializeField] private GameObject sawBladeShurikenPrefab;
+
     private void Awake()
     {
         CleanupStarterSceneJunk();
@@ -105,8 +118,8 @@ public class GameBootstrapper : MonoBehaviour
 
     private void CreateBackground()
     {
-        GameObject floor0 = RuntimePrefabLoader.LoadPrefab("FloorPrefab0");
-        GameObject floor1 = RuntimePrefabLoader.LoadPrefab("FloorPrefab1");
+        GameObject floor0 = GetPrefab(floorPrefab0, "FloorPrefab0");
+        GameObject floor1 = GetPrefab(floorPrefab1, "FloorPrefab1");
 
         if (floor0 == null || floor1 == null)
         {
@@ -137,7 +150,7 @@ public class GameBootstrapper : MonoBehaviour
 
     private GameObject CreatePlayer()
     {
-        GameObject playerPrefab = RuntimePrefabLoader.LoadPrefab("CharacterPrefab");
+        GameObject playerPrefab = GetPrefab(characterPrefab, "CharacterPrefab");
         GameObject player = playerPrefab != null ? Instantiate(playerPrefab) : new GameObject("Player");
         player.name = "Player";
         player.transform.position = Vector3.zero;
@@ -180,6 +193,9 @@ public class GameBootstrapper : MonoBehaviour
 
         WeaponManager weaponManager = player.AddComponent<WeaponManager>();
         weaponManager.mainGun = weapon;
+        weaponManager.SetSpecialWeaponPrefabs(
+            GetPrefab(bombPrefab, "BombPrefab"),
+            GetPrefab(sawBladeShurikenPrefab, "SawBladeShuriken"));
 
         xp.weapon = weapon;
         xp.weaponManager = weaponManager;
@@ -189,7 +205,7 @@ public class GameBootstrapper : MonoBehaviour
 
     private GameObject CreatePlayerProjectileTemplate()
     {
-        GameObject prefab = RuntimePrefabLoader.LoadPrefab("McProjectilePrefab");
+        GameObject prefab = GetPrefab(mcProjectilePrefab, "McProjectilePrefab");
         GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("PlayerBullet_Template");
         t.name = "PlayerBullet_Template";
         t.SetActive(false);
@@ -218,7 +234,7 @@ public class GameBootstrapper : MonoBehaviour
 
     private GameObject CreateEnemyProjectileTemplate()
     {
-        GameObject prefab = RuntimePrefabLoader.LoadPrefab("EnemyProjectilePrefab");
+        GameObject prefab = GetPrefab(enemyProjectilePrefab, "EnemyProjectilePrefab");
         GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("EnemyProjectile_Template");
         t.name = "EnemyProjectile_Template";
         t.SetActive(false);
@@ -247,7 +263,7 @@ public class GameBootstrapper : MonoBehaviour
 
     private XpGem CreateXpGemTemplate()
     {
-        GameObject prefab = RuntimePrefabLoader.LoadPrefab("ExpPrefab");
+        GameObject prefab = GetPrefab(expPrefab, "ExpPrefab");
         GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("XpGem_Template");
         t.name = "XpGem_Template";
         t.SetActive(false);
@@ -270,7 +286,7 @@ public class GameBootstrapper : MonoBehaviour
 
     private EnemyAI CreateMeleeEnemyTemplate(XpGem gemTemplate)
     {
-        GameObject prefab = RuntimePrefabLoader.LoadPrefab("MeleeEnemyPrefab");
+        GameObject prefab = GetPrefab(meleeEnemyPrefab, "MeleeEnemyPrefab");
         GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("EnemyMelee_Template");
         t.name = "EnemyMelee_Template";
         t.SetActive(false);
@@ -297,6 +313,7 @@ public class GameBootstrapper : MonoBehaviour
         e.contactDamage = meleeContactDamage;
         e.contactDamageCooldown = meleeContactCooldown;
         e.xpGemPrefab = gemTemplate;
+        e.SetHeartPrefab(GetPrefab(heartPrefab, "HeartPrefab"));
         e.xpValue = 5;
 
         return e;
@@ -304,7 +321,7 @@ public class GameBootstrapper : MonoBehaviour
 
     private RangedEnemyAI CreateRangedEnemyTemplate(XpGem gemTemplate, Projectile enemyProjectileTemplate)
     {
-        GameObject prefab = RuntimePrefabLoader.LoadPrefab("RangedEnemyPrefab");
+        GameObject prefab = GetPrefab(rangedEnemyPrefab, "RangedEnemyPrefab");
         GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("EnemyRanged_Template");
         t.name = "EnemyRanged_Template";
         t.SetActive(false);
@@ -335,6 +352,7 @@ public class GameBootstrapper : MonoBehaviour
         e.projectileSpeed = rangedProjectileSpeed;
         e.projectilePrefab = enemyProjectileTemplate;
         e.xpGemPrefab = gemTemplate;
+        e.SetHeartPrefab(GetPrefab(heartPrefab, "HeartPrefab"));
         e.xpValue = 7;
 
         return e;
@@ -398,6 +416,11 @@ public class GameBootstrapper : MonoBehaviour
         SpriteRenderer[] renderers = go.GetComponentsInChildren<SpriteRenderer>(true);
         for (int i = 0; i < renderers.Length; i++)
             renderers[i].sortingOrder = sortingOrder;
+    }
+
+    private GameObject GetPrefab(GameObject assignedPrefab, string fallbackName)
+    {
+        return assignedPrefab != null ? assignedPrefab : RuntimePrefabLoader.LoadPrefab(fallbackName);
     }
 }
 

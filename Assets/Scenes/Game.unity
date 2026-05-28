@@ -15,6 +15,11 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 0
+  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogMode: 3
+  m_FogDensity: 0.01
+  m_LinearFogStart: 0
+  m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.05, g: 0.05, b: 0.07, a: 1}
   m_AmbientEquatorColor: {r: 0.05, g: 0.05, b: 0.07, a: 1}
   m_AmbientGroundColor: {r: 0.05, g: 0.05, b: 0.07, a: 1}
@@ -26,7 +31,7 @@ RenderSettings:
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
-  m_SpotCookie: {fileID: 0}
+  m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
   m_DefaultReflectionMode: 0
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
@@ -38,6 +43,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -255,6 +261,17 @@ MonoBehaviour:
   minSpawnDistanceFromPlayer: 5
   startSpawnsPerSecond: 0.45
   endSpawnsPerSecond: 1.45
+  floorPrefab0: {fileID: 8445624520235058907, guid: 546337f49bf382b46a0ac421ea92ff1f, type: 3}
+  floorPrefab1: {fileID: 6871339524911267178, guid: eb77e94ddbf3bdb4eabe996be38150c1, type: 3}
+  characterPrefab: {fileID: 5823810847073669417, guid: dd0711efa4ddaad4a8a9e9df72fd357e, type: 3}
+  mcProjectilePrefab: {fileID: 6810514596691919857, guid: 6555d542503cb754188d99ddd7bb1230, type: 3}
+  enemyProjectilePrefab: {fileID: 2678047711437825129, guid: 57eb2a77d85d2e944a93d5c79b40c4df, type: 3}
+  expPrefab: {fileID: 7585648139630725860, guid: 7e047a41d3aa4684ba5b9cbcc8c580c7, type: 3}
+  meleeEnemyPrefab: {fileID: 3888342391001281318, guid: 11de007889ed8424889c293975f2f685, type: 3}
+  rangedEnemyPrefab: {fileID: 9188342364463272929, guid: bdd67c84010aecc4dbb2957669d4739d, type: 3}
+  heartPrefab: {fileID: 3140014057307791649, guid: f704c1480afc33044a55194a97fd94bf, type: 3}
+  bombPrefab: {fileID: 7957527328722635384, guid: d7037b37672ee5b449902e32f11626f9, type: 3}
+  sawBladeShurikenPrefab: {fileID: 7810809599579445579, guid: a5f8910a318133f4ca9289c94b76de30, type: 3}
 --- !u!4 &200002
 Transform:
   m_ObjectHideFlags: 0
