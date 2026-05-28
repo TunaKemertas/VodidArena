@@ -97,7 +97,7 @@ namespace VoidSurvivors.Weapons
             // Special weapons: unlocks only if we still have room.
             if (canUnlockNewSpecial)
             {
-                AddUnlockIfMissing(pool, WeaponId.RocketLauncher, "Rocket Launcher", "Unlock: fires rockets that explode (area damage).");
+                AddUnlockIfMissing(pool, WeaponId.RocketLauncher, "Bomb Launcher", "Unlock: fires bombs that explode (area damage).");
                 AddUnlockIfMissing(pool, WeaponId.RotatingSaw, "Rotating Saw", "Unlock: saw blades orbit you and shred enemies while active.");
                 AddUnlockIfMissing(pool, WeaponId.SlowingField, "Slowing Field", "Unlock: aura slows enemies inside.");
                 AddUnlockIfMissing(pool, WeaponId.Boomerang, "Boomerang", "Unlock: boomerangs fly out and return, hitting twice.");
@@ -105,7 +105,7 @@ namespace VoidSurvivors.Weapons
             }
 
             // Upgrades for owned specials (exclude max level).
-            AddUpgradeIfOwned(pool, WeaponId.RocketLauncher, "Rocket Launcher");
+            AddUpgradeIfOwned(pool, WeaponId.RocketLauncher, "Bomb Launcher");
             AddUpgradeIfOwned(pool, WeaponId.RotatingSaw, "Rotating Saw");
             AddUpgradeIfOwned(pool, WeaponId.SlowingField, "Slowing Field");
             AddUpgradeIfOwned(pool, WeaponId.Boomerang, "Boomerang");
@@ -243,7 +243,7 @@ namespace VoidSurvivors.Weapons
             switch (id)
             {
                 case WeaponId.MainGun: return "Main Gun";
-                case WeaponId.RocketLauncher: return "Rocket Launcher";
+                case WeaponId.RocketLauncher: return "Bomb Launcher";
                 case WeaponId.RotatingSaw: return "Rotating Saw";
                 case WeaponId.SlowingField: return "Slowing Field";
                 case WeaponId.Boomerang: return "Boomerang";
@@ -258,9 +258,9 @@ namespace VoidSurvivors.Weapons
             switch (id)
             {
                 case WeaponId.RocketLauncher:
-                    if (nextLevel >= 1 && nextLevel <= 4) return "Fires +1 additional rocket.";
+                    if (nextLevel >= 1 && nextLevel <= 4) return "Fires +1 additional bomb.";
                     if (nextLevel == 5) return "Stronger explosion (radius + damage).";
-                    return "Upgrade rockets.";
+                    return "Upgrade bombs.";
                 case WeaponId.RotatingSaw:
                     if (nextLevel >= 1 && nextLevel <= 5) return "Adds +1 saw blade.";
                     return "Upgrade saws.";

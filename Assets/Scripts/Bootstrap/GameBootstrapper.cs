@@ -105,17 +105,48 @@ public class GameBootstrapper : MonoBehaviour
 
     private void CreateBackground()
     {
-        GameObject bg = new GameObject("Background");
-        AutoSprite2D.AddTo(bg, new Color(0.08f, 0.08f, 0.12f, 1f), sortingOrder: -100);
-        bg.transform.localScale = new Vector3(100f, 100f, 1f);
+        GameObject floor0 = RuntimePrefabLoader.LoadPrefab("FloorPrefab0");
+        GameObject floor1 = RuntimePrefabLoader.LoadPrefab("FloorPrefab1");
+
+        if (floor0 == null || floor1 == null)
+        {
+            GameObject bg = new GameObject("Background");
+            AutoSprite2D.AddTo(bg, new Color(0.08f, 0.08f, 0.12f, 1f), sortingOrder: -100);
+            bg.transform.localScale = new Vector3(150f, 150f, 1f);
+            return;
+        }
+
+        GameObject root = new GameObject("MixedFloor");
+        const int halfTiles = 18;
+        const float tileSize = 1.5f;
+        const float spriteScale = 9.375f;
+
+        for (int x = -halfTiles; x <= halfTiles; x++)
+        {
+            for (int y = -halfTiles; y <= halfTiles; y++)
+            {
+                GameObject prefab = ((x + y) & 1) == 0 ? floor0 : floor1;
+                GameObject tile = Instantiate(prefab, new Vector3(x * tileSize, y * tileSize, 1f), Quaternion.identity);
+                tile.name = $"Floor_{x}_{y}";
+                tile.transform.SetParent(root.transform, true);
+                tile.transform.localScale = Vector3.one * spriteScale;
+                SetSortingOrder(tile, -100);
+            }
+        }
     }
 
     private GameObject CreatePlayer()
     {
-        GameObject player = new GameObject("Player");
+        GameObject playerPrefab = RuntimePrefabLoader.LoadPrefab("CharacterPrefab");
+        GameObject player = playerPrefab != null ? Instantiate(playerPrefab) : new GameObject("Player");
+        player.name = "Player";
         player.transform.position = Vector3.zero;
+        player.transform.localScale = Vector3.one * 5.25f;
 
-        AutoSprite2D.AddTo(player, new Color(0.95f, 0.95f, 0.2f, 1f), sortingOrder: 10);
+        if (player.GetComponent<SpriteRenderer>() != null)
+            SetSortingOrder(player, 10);
+        else
+            AutoSprite2D.AddTo(player, new Color(0.95f, 0.95f, 0.2f, 1f), sortingOrder: 10);
 
         Rigidbody2D rb = player.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -124,7 +155,7 @@ public class GameBootstrapper : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         CircleCollider2D col = player.AddComponent<CircleCollider2D>();
-        col.radius = 0.35f;
+        col.radius = 0.0389f;
         col.isTrigger = false;
 
         PlayerController pc = player.AddComponent<PlayerController>();
@@ -137,7 +168,8 @@ public class GameBootstrapper : MonoBehaviour
         // Fire point
         GameObject firePoint = new GameObject("FirePoint");
         firePoint.transform.SetParent(player.transform);
-        firePoint.transform.localPosition = new Vector3(0.6f, 0f, 0f);
+        // Spawn shots from the character center. With scaled sprites, side offsets become too large and make aim feel inaccurate.
+        firePoint.transform.localPosition = Vector3.zero;
 
         WeaponController weapon = player.AddComponent<WeaponController>();
         weapon.damage = weaponDamage;
@@ -157,12 +189,17 @@ public class GameBootstrapper : MonoBehaviour
 
     private GameObject CreatePlayerProjectileTemplate()
     {
-        GameObject t = new GameObject("PlayerBullet_Template");
+        GameObject prefab = RuntimePrefabLoader.LoadPrefab("McProjectilePrefab");
+        GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("PlayerBullet_Template");
+        t.name = "PlayerBullet_Template";
         t.SetActive(false);
         t.transform.position = new Vector3(9999, 9999, 0);
 
-        AutoSprite2D.AddTo(t, new Color(0.75f, 1f, 0.95f, 1f), sortingOrder: 20);
-        t.transform.localScale = new Vector3(0.34f, 0.34f, 1f);
+        if (t.GetComponent<SpriteRenderer>() != null)
+            SetSortingOrder(t, 20);
+        else
+            AutoSprite2D.AddTo(t, new Color(0.75f, 1f, 0.95f, 1f), sortingOrder: 20);
+        t.transform.localScale = new Vector3(3.6f, 3.6f, 1f);
 
         Rigidbody2D rb = t.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -171,7 +208,7 @@ public class GameBootstrapper : MonoBehaviour
 
         CircleCollider2D col = t.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
-        col.radius = 0.14f;
+        col.radius = 0.0156f;
 
         Projectile p = t.AddComponent<Projectile>();
         p.lifetime = 2.5f;
@@ -181,12 +218,17 @@ public class GameBootstrapper : MonoBehaviour
 
     private GameObject CreateEnemyProjectileTemplate()
     {
-        GameObject t = new GameObject("EnemyProjectile_Template");
+        GameObject prefab = RuntimePrefabLoader.LoadPrefab("EnemyProjectilePrefab");
+        GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("EnemyProjectile_Template");
+        t.name = "EnemyProjectile_Template";
         t.SetActive(false);
         t.transform.position = new Vector3(9999, 9999, 0);
 
-        AutoSprite2D.AddTo(t, new Color(1f, 0.55f, 0.65f, 1f), sortingOrder: 20);
-        t.transform.localScale = new Vector3(0.3f, 0.3f, 1f);
+        if (t.GetComponent<SpriteRenderer>() != null)
+            SetSortingOrder(t, 20);
+        else
+            AutoSprite2D.AddTo(t, new Color(1f, 0.55f, 0.65f, 1f), sortingOrder: 20);
+        t.transform.localScale = new Vector3(3.3f, 3.3f, 1f);
 
         Rigidbody2D rb = t.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -195,7 +237,7 @@ public class GameBootstrapper : MonoBehaviour
 
         CircleCollider2D col = t.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
-        col.radius = 0.1f;
+        col.radius = 0.0111f;
 
         Projectile p = t.AddComponent<Projectile>();
         p.lifetime = 3f;
@@ -205,16 +247,21 @@ public class GameBootstrapper : MonoBehaviour
 
     private XpGem CreateXpGemTemplate()
     {
-        GameObject t = new GameObject("XpGem_Template");
+        GameObject prefab = RuntimePrefabLoader.LoadPrefab("ExpPrefab");
+        GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("XpGem_Template");
+        t.name = "XpGem_Template";
         t.SetActive(false);
         t.transform.position = new Vector3(9999, 9999, 0);
 
-        AutoSprite2D.AddTo(t, new Color(0.4f, 1f, 0.55f, 1f), sortingOrder: 5);
-        t.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        if (t.GetComponent<SpriteRenderer>() != null)
+            SetSortingOrder(t, 5);
+        else
+            AutoSprite2D.AddTo(t, new Color(0.4f, 1f, 0.55f, 1f), sortingOrder: 5);
+        t.transform.localScale = new Vector3(4.2f, 4.2f, 1f);
 
         CircleCollider2D col = t.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
-        col.radius = 0.12f;
+        col.radius = 0.0133f;
 
         XpGem gem = t.AddComponent<XpGem>();
         gem.xpAmount = 5;
@@ -223,11 +270,17 @@ public class GameBootstrapper : MonoBehaviour
 
     private EnemyAI CreateMeleeEnemyTemplate(XpGem gemTemplate)
     {
-        GameObject t = new GameObject("EnemyMelee_Template");
+        GameObject prefab = RuntimePrefabLoader.LoadPrefab("MeleeEnemyPrefab");
+        GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("EnemyMelee_Template");
+        t.name = "EnemyMelee_Template";
         t.SetActive(false);
         t.transform.position = new Vector3(9999, 9999, 0);
 
-        AutoSprite2D.AddTo(t, new Color(0.8f, 0.25f, 0.9f, 1f), sortingOrder: 9);
+        if (t.GetComponent<SpriteRenderer>() != null)
+            SetSortingOrder(t, 9);
+        else
+            AutoSprite2D.AddTo(t, new Color(0.8f, 0.25f, 0.9f, 1f), sortingOrder: 9);
+        t.transform.localScale = new Vector3(4.8f, 4.8f, 1f);
 
         Rigidbody2D rb = t.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -236,7 +289,7 @@ public class GameBootstrapper : MonoBehaviour
 
         CircleCollider2D col = t.AddComponent<CircleCollider2D>();
         col.isTrigger = false;
-        col.radius = 0.33f;
+        col.radius = 0.0367f;
 
         EnemyAI e = t.AddComponent<EnemyAI>();
         e.maxHP = meleeHP;
@@ -251,11 +304,17 @@ public class GameBootstrapper : MonoBehaviour
 
     private RangedEnemyAI CreateRangedEnemyTemplate(XpGem gemTemplate, Projectile enemyProjectileTemplate)
     {
-        GameObject t = new GameObject("EnemyRanged_Template");
+        GameObject prefab = RuntimePrefabLoader.LoadPrefab("RangedEnemyPrefab");
+        GameObject t = prefab != null ? Instantiate(prefab) : new GameObject("EnemyRanged_Template");
+        t.name = "EnemyRanged_Template";
         t.SetActive(false);
         t.transform.position = new Vector3(9999, 9999, 0);
 
-        AutoSprite2D.AddTo(t, new Color(1f, 0.6f, 0.2f, 1f), sortingOrder: 9);
+        if (t.GetComponent<SpriteRenderer>() != null)
+            SetSortingOrder(t, 9);
+        else
+            AutoSprite2D.AddTo(t, new Color(1f, 0.6f, 0.2f, 1f), sortingOrder: 9);
+        t.transform.localScale = new Vector3(4.8f, 4.8f, 1f);
 
         Rigidbody2D rb = t.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -264,7 +323,7 @@ public class GameBootstrapper : MonoBehaviour
 
         CircleCollider2D col = t.AddComponent<CircleCollider2D>();
         col.isTrigger = false;
-        col.radius = 0.33f;
+        col.radius = 0.0367f;
 
         RangedEnemyAI e = t.AddComponent<RangedEnemyAI>();
         e.maxHP = rangedHP;
@@ -332,6 +391,13 @@ public class GameBootstrapper : MonoBehaviour
         if (follow == null) follow = cam.gameObject.AddComponent<CameraFollow2D>();
         follow.target = player;
         follow.smoothTime = 0.12f;
+    }
+
+    private void SetSortingOrder(GameObject go, int sortingOrder)
+    {
+        SpriteRenderer[] renderers = go.GetComponentsInChildren<SpriteRenderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+            renderers[i].sortingOrder = sortingOrder;
     }
 }
 

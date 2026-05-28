@@ -6,7 +6,7 @@ namespace VoidSurvivors.Weapons.RotatingSaw
     public class RotatingSawWeapon : MonoBehaviour
     {
         [Header("Orbit")]
-        public float orbitRadius = 5f;
+        public float orbitRadius = 3.2f;
         public float orbitSpeedDegrees = 180f;
 
         [Header("Activation Cycle")]
@@ -16,16 +16,22 @@ namespace VoidSurvivors.Weapons.RotatingSaw
         [Header("Damage")]
         public int damage = 8;
 
+        [Header("Visual")]
+        public float bladeScale = 7f;
+
         [Header("Runtime")]
         [Range(1, 5)] public int level = 1;
 
+        private const string SawBladePrefabPath = "Weapons/SawBladeShuriken";
         private readonly List<Transform> _blades = new List<Transform>();
+        private GameObject _bladePrefab;
         private float _angle;
         private float _cycleTimer;
         private bool _active;
 
         private void Start()
         {
+            _bladePrefab = Resources.Load<GameObject>(SawBladePrefabPath);
             RebuildBlades();
             SetActiveState(true);
         }
@@ -38,6 +44,15 @@ namespace VoidSurvivors.Weapons.RotatingSaw
 
             TickCycle();
             TickOrbit();
+        }
+
+        private void OnDestroy()
+        {
+            for (int i = 0; i < _blades.Count; i++)
+            {
+                if (_blades[i] != null)
+                    Destroy(_blades[i].gameObject);
+            }
         }
 
         public void SetLevel(int newLevel)
@@ -88,9 +103,10 @@ namespace VoidSurvivors.Weapons.RotatingSaw
                 if (t == null) continue;
 
                 float a = (_angle + i * step) * Mathf.Deg2Rad;
-                Vector3 local = new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f) * orbitRadius;
-                t.localPosition = local;
-                t.localRotation = Quaternion.Euler(0f, 0f, -_angle * 2f);
+                Vector3 offset = new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f) * orbitRadius;
+                // World-space orbit: do not inherit the player's scale, otherwise blades fly off-screen.
+                t.position = transform.position + offset;
+                t.rotation = Quaternion.Euler(0f, 0f, -_angle * 2f);
             }
         }
 
@@ -114,18 +130,39 @@ namespace VoidSurvivors.Weapons.RotatingSaw
 
         private Transform CreateBlade(int index)
         {
-            GameObject go = new GameObject($"SawBlade_{index + 1}");
-            go.transform.SetParent(transform, false);
-            go.transform.localPosition = Vector3.right * orbitRadius;
+            GameObject go = _bladePrefab != null
+                ? Instantiate(_bladePrefab)
+                : new GameObject($"SawBlade_{index + 1}");
 
-            AutoSprite2D.AddTo(go, new Color(0.75f, 0.75f, 0.8f, 1f), sortingOrder: 18);
-            go.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+            go.name = $"SawBlade_{index + 1}";
+            go.transform.SetParent(null, true);
+            go.transform.position = transform.position + Vector3.right * orbitRadius;
+            go.transform.rotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one * bladeScale;
 
-            CircleCollider2D col = go.AddComponent<CircleCollider2D>();
+            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = true;
+                sr.sortingOrder = 18;
+                sr.color = Color.white;
+            }
+            else
+                AutoSprite2D.AddTo(go, new Color(0.75f, 0.75f, 0.8f, 1f), sortingOrder: 18);
+
+            CircleCollider2D col = go.GetComponent<CircleCollider2D>();
+            if (col == null) col = go.AddComponent<CircleCollider2D>();
             col.isTrigger = true;
-            col.radius = 0.28f;
+            col.radius = 0.08f;
 
-            SawBlade sb = go.AddComponent<SawBlade>();
+            Rigidbody2D rb = go.GetComponent<Rigidbody2D>();
+            if (rb == null) rb = go.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 0f;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+            SawBlade sb = go.GetComponent<SawBlade>();
+            if (sb == null) sb = go.AddComponent<SawBlade>();
             sb.damage = damage;
             sb.hitCooldown = 0.25f;
             sb.SetActive(true);

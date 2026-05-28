@@ -51,11 +51,11 @@ namespace VoidSurvivors.Weapons.FireShoes
             GameObject go = new GameObject("FireTrail");
             go.transform.position = pos;
             AutoSprite2D.AddTo(go, new Color(1f, 0.35f, 0.1f, 0.7f), sortingOrder: 7);
-            go.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+            go.transform.localScale = new Vector3(1.35f, 1.35f, 1f);
 
             CircleCollider2D col = go.AddComponent<CircleCollider2D>();
             col.isTrigger = true;
-            col.radius = 0.55f;
+            col.radius = 0.0611f;
 
             FireTrail t = go.AddComponent<FireTrail>();
             t.lifetime = baseLifetime + lifetimePerLevel * (level - 1);

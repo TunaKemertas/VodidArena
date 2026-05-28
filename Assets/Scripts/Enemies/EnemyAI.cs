@@ -101,16 +101,25 @@ public class EnemyAI : MonoBehaviour
 
     private void SpawnHeart(Vector3 pos)
     {
-        GameObject go = new GameObject("HeartPickup");
+        GameObject prefab = RuntimePrefabLoader.LoadPrefab("HeartPrefab");
+        GameObject go = prefab != null ? Instantiate(prefab) : new GameObject("HeartPickup");
+        go.name = "HeartPickup";
         go.transform.position = pos;
-        AutoSprite2D.AddTo(go, new Color(1f, 0.28f, 0.35f, 1f), sortingOrder: 12);
-        go.transform.localScale = new Vector3(0.45f, 0.45f, 1f);
 
-        CircleCollider2D col = go.AddComponent<CircleCollider2D>();
+        SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+        if (sr != null)
+            sr.sortingOrder = 12;
+        else
+            AutoSprite2D.AddTo(go, new Color(1f, 0.28f, 0.35f, 1f), sortingOrder: 12);
+        go.transform.localScale = new Vector3(4.8f, 4.8f, 1f);
+
+        CircleCollider2D col = go.GetComponent<CircleCollider2D>();
+        if (col == null) col = go.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
-        col.radius = 0.24f;
+        col.radius = 0.0267f;
 
-        HeartPickup hp = go.AddComponent<HeartPickup>();
+        HeartPickup hp = go.GetComponent<HeartPickup>();
+        if (hp == null) hp = go.AddComponent<HeartPickup>();
         hp.healPercent = 0.25f;
     }
 
@@ -119,11 +128,11 @@ public class EnemyAI : MonoBehaviour
         GameObject go = new GameObject("MagnetPickup");
         go.transform.position = pos;
         AutoSprite2D.AddTo(go, new Color(0.35f, 0.85f, 1f, 1f), sortingOrder: 12);
-        go.transform.localScale = new Vector3(0.42f, 0.42f, 1f);
+        go.transform.localScale = new Vector3(0.63f, 0.63f, 1f);
 
         CircleCollider2D col = go.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
-        col.radius = 0.22f;
+        col.radius = 0.0244f;
 
         go.AddComponent<MagnetPickup>();
     }

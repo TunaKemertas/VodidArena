@@ -90,21 +90,31 @@ namespace VoidSurvivors.Weapons.RocketLauncher
 
         private void SpawnRocket(Vector3 pos, Vector2 dir, int dmg, float radius)
         {
-            GameObject go = new GameObject("Rocket");
+            GameObject prefab = RuntimePrefabLoader.LoadPrefab("BombPrefab");
+            GameObject go = prefab != null ? Instantiate(prefab) : new GameObject("Bomb");
+            go.name = "Bomb";
             go.transform.position = pos;
-            AutoSprite2D.AddTo(go, new Color(1f, 0.85f, 0.3f, 1f), sortingOrder: 22);
-            go.transform.localScale = new Vector3(0.45f, 0.2f, 1f);
 
-            Rigidbody2D rb = go.AddComponent<Rigidbody2D>();
+            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+            if (sr != null)
+                sr.sortingOrder = 22;
+            else
+                AutoSprite2D.AddTo(go, new Color(1f, 0.85f, 0.3f, 1f), sortingOrder: 22);
+            go.transform.localScale = new Vector3(4.2f, 4.2f, 1f);
+
+            Rigidbody2D rb = go.GetComponent<Rigidbody2D>();
+            if (rb == null) rb = go.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             rb.bodyType = RigidbodyType2D.Kinematic;
 
-            CircleCollider2D col = go.AddComponent<CircleCollider2D>();
+            CircleCollider2D col = go.GetComponent<CircleCollider2D>();
+            if (col == null) col = go.AddComponent<CircleCollider2D>();
             col.isTrigger = true;
-            col.radius = 0.12f;
+            col.radius = 0.0133f;
 
-            RocketProjectile rp = go.AddComponent<RocketProjectile>();
+            RocketProjectile rp = go.GetComponent<RocketProjectile>();
+            if (rp == null) rp = go.AddComponent<RocketProjectile>();
             rp.lifetime = 3.2f;
             rp.Initialize(dir, projectileSpeed, dmg, radius);
         }

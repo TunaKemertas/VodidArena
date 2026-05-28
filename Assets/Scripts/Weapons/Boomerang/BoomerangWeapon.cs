@@ -81,11 +81,11 @@ namespace VoidSurvivors.Weapons.Boomerang
             GameObject go = new GameObject("Boomerang");
             go.transform.position = transform.position;
             AutoSprite2D.AddTo(go, new Color(0.3f, 1f, 0.75f, 1f), sortingOrder: 21);
-            go.transform.localScale = new Vector3(0.36f, 0.14f, 1f);
+            go.transform.localScale = new Vector3(0.54f, 0.21f, 1f);
 
             CircleCollider2D col = go.AddComponent<CircleCollider2D>();
             col.isTrigger = true;
-            col.radius = 0.14f;
+            col.radius = 0.0156f;
 
             BoomerangProjectile p = go.AddComponent<BoomerangProjectile>();
             p.damage = damage + (level - 1) * 2;
